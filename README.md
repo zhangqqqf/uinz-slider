@@ -10,7 +10,7 @@ const demo = props => {
     'http://static.bootcss.com/www/assets/img/flat-ui.png',
   ]
   return (
-    <Slider images={images}/>
+    <Slider images={images} auto={ture} autoTime={1000}/>
   )
 }
 ```
