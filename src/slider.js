@@ -114,3 +114,7 @@ export default class Slider extends Component {
 Slider.defaultProps = {
   images: [],
 }
+
+// onClick onContextMenu onDoubleClick onDrag onDragEnd onDragEnter onDragExit
+// onDragLeave onDragOver onDragStart onDrop onMouseDown onMouseEnter onMouseLeave
+// onMouseMove onMouseOut onMouseOver onMouseUp

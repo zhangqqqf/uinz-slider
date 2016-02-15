@@ -123,18 +123,17 @@ var Slider = function (_Component) {
           style: wrapperStyle,
           ref: 'container',
           onTouchStart: this.onTouchStart.bind(this),
+          onMouseDown: this.onTouchStart.bind(this),
           onTouchMove: this.onTouchMove.bind(this),
-          onTouchEnd: this.onTouchEnd.bind(this)
+          onMouseMove: this.onTouchMove.bind(this),
+          onTouchEnd: this.onTouchEnd.bind(this),
+          onMouseUp: this.onTouchEnd.bind(this)
         },
         _react2.default.createElement(
           'div',
           { style: navStyle },
           images.map(function (_, index) {
-<<<<<<< HEAD
-            return _react2.default.createElement('span', { style: index == _this2.state.index ? Object.assign({}, navDotStyle, { backgroundColor: '#FFF' }) : navDotStyle });
-=======
             return _react2.default.createElement('span', { key: 'uinz-' + index, style: index == _this2.state.index ? Object.assign({}, navDotStyle, { backgroundColor: '#FFF' }) : navDotStyle });
->>>>>>> master
           })
         ),
         _react2.default.createElement(
@@ -160,3 +159,7 @@ exports.default = Slider;
 Slider.defaultProps = {
   images: []
 };
+
+// onClick onContextMenu onDoubleClick onDrag onDragEnd onDragEnter onDragExit
+// onDragLeave onDragOver onDragStart onDrop onMouseDown onMouseEnter onMouseLeave
+// onMouseMove onMouseOut onMouseOver onMouseUp

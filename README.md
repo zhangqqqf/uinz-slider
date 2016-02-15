@@ -10,11 +10,9 @@ const demo = props => {
     'http://static.bootcss.com/www/assets/img/flat-ui.png',
   ]
   return (
-<<<<<<< HEAD
-    <Slider images=images>
-=======
     <Slider images={images}/>
->>>>>>> master
   )
 }
 ```
+
+(demo)[http://yinzse.github.io/uinz-slider/]: http://yinzse.github.io/uinz-slider/

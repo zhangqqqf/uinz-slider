@@ -19821,8 +19821,11 @@
 	          style: wrapperStyle,
 	          ref: 'container',
 	          onTouchStart: this.onTouchStart.bind(this),
+	          onMouseDown: this.onTouchStart.bind(this),
 	          onTouchMove: this.onTouchMove.bind(this),
-	          onTouchEnd: this.onTouchEnd.bind(this)
+	          onMouseMove: this.onTouchMove.bind(this),
+	          onTouchEnd: this.onTouchEnd.bind(this),
+	          onMouseUp: this.onTouchEnd.bind(this)
 	        },
 	        _react2.default.createElement(
 	          'div',
@@ -19854,6 +19857,10 @@
 	Slider.defaultProps = {
 	  images: []
 	};
+
+	// onClick onContextMenu onDoubleClick onDrag onDragEnd onDragEnter onDragExit
+	// onDragLeave onDragOver onDragStart onDrop onMouseDown onMouseEnter onMouseLeave
+	// onMouseMove onMouseOut onMouseOver onMouseUp
 
 /***/ }
 /******/ ]);
