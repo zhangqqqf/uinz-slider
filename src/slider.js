@@ -95,7 +95,7 @@ export default class Slider extends Component {
       >
         <div style={navStyle}>
           {images.map((_, index) =>
-            <span style={index == this.state.index ? Object.assign({}, navDotStyle, {backgroundColor: '#FFF'}) : navDotStyle}/>
+            <span key={`uinz-${index}`} style={index == this.state.index ? Object.assign({}, navDotStyle, {backgroundColor: '#FFF'}) : navDotStyle}/>
           )}
         </div>
         <div
