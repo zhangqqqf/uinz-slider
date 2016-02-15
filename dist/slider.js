@@ -130,7 +130,7 @@ var Slider = function (_Component) {
           'div',
           { style: navStyle },
           images.map(function (_, index) {
-            return _react2.default.createElement('span', { style: index == _this2.state.index ? Object.assign({}, navDotStyle, { backgroundColor: '#FFF' }) : navDotStyle });
+            return _react2.default.createElement('span', { key: 'uinz-' + index, style: index == _this2.state.index ? Object.assign({}, navDotStyle, { backgroundColor: '#FFF' }) : navDotStyle });
           })
         ),
         _react2.default.createElement(
