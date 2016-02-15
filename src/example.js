@@ -11,7 +11,7 @@ const images = [
 class Example extends Component {
   render() {
     return (
-      <Slider images={images}/>
+      <Slider images={images} auto={true}/>
     )
   }
 }

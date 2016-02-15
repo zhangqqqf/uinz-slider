@@ -82,7 +82,7 @@
 	  _createClass(Example, [{
 	    key: 'render',
 	    value: function render() {
-	      return _react2.default.createElement(_slider2.default, { images: images });
+	      return _react2.default.createElement(_slider2.default, { images: images, auto: true });
 	    }
 	  }]);
 
@@ -19723,7 +19723,7 @@
 
 	var navStyle = {
 	  position: 'absolute',
-	  bottom: '10%',
+	  bottom: '5%',
 	  textAlign: 'center',
 	  zIndex: '3',
 	  width: '100%'
@@ -19754,6 +19754,12 @@
 
 	var EDGE_WIDTH = 50;
 
+	/* 
+	  @parmas images arrary
+	  @parmas autoTime number
+	  @parmas auto bool
+	*/
+
 	var Slider = function (_Component) {
 	  _inherits(Slider, _Component);
 
@@ -19769,6 +19775,38 @@
 	  }
 
 	  _createClass(Slider, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      var _this2 = this;
+
+	      var _props = this.props;
+	      var auto = _props.auto;
+	      var images = _props.images;
+	      var autoTime = this.props.autoTime;
+
+
+	      autoTime = autoTime ? autoTime : 3000;
+
+	      console.log(auto);
+
+	      if (auto) {
+	        this.interval = setInterval(function () {
+	          var index = _this2.state.index + 2 > images.length ? 0 : _this2.state.index + 1;
+	          _this2.setState({ index: index });
+	          _this2.index = -index;
+
+	          _this2.preTranslateX = _this2.index * _this2.refs.container.offsetWidth;
+	          _this2.refs.row.style.transition = 'all .5s';
+	          _this2.refs.row.style.webkitTransition = 'all .5s';
+
+	          _this2.refs.row.style.transform = 'translateX(' + _this2.preTranslateX + 'px)';
+	          _this2.refs.row.style.webkitTransform = 'translateX(' + _this2.preTranslateX + 'px)';
+
+	          console.log(_this2.preTranslateX);
+	        }, autoTime);
+	      }
+	    }
+	  }, {
 	    key: 'onTouchStart',
 	    value: function onTouchStart(e) {
 	      e.preventDefault();
@@ -19809,7 +19847,7 @@
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var _this2 = this;
+	      var _this3 = this;
 
 	      var images = this.props.images;
 
@@ -19821,17 +19859,14 @@
 	          style: wrapperStyle,
 	          ref: 'container',
 	          onTouchStart: this.onTouchStart.bind(this),
-	          onMouseDown: this.onTouchStart.bind(this),
 	          onTouchMove: this.onTouchMove.bind(this),
-	          onMouseMove: this.onTouchMove.bind(this),
-	          onTouchEnd: this.onTouchEnd.bind(this),
-	          onMouseUp: this.onTouchEnd.bind(this)
+	          onTouchEnd: this.onTouchEnd.bind(this)
 	        },
 	        _react2.default.createElement(
 	          'div',
 	          { style: navStyle },
 	          images.map(function (_, index) {
-	            return _react2.default.createElement('span', { key: 'uinz-' + index, style: index == _this2.state.index ? Object.assign({}, navDotStyle, { backgroundColor: '#FFF' }) : navDotStyle });
+	            return _react2.default.createElement('span', { key: 'uinz-' + index, style: index == _this3.state.index ? Object.assign({}, navDotStyle, { backgroundColor: '#FFF' }) : navDotStyle });
 	          })
 	        ),
 	        _react2.default.createElement(

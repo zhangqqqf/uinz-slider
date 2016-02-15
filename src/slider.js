@@ -7,7 +7,7 @@ const wrapperStyle = {
 
 const navStyle = {
   position: 'absolute',
-  bottom: '10%',
+  bottom: '5%',
   textAlign: 'center',
   zIndex: '3',
   width: '100%',
@@ -38,12 +38,43 @@ const imgStyle = {
 
 const EDGE_WIDTH = 50
 
+/* 
+  @parmas images arrary
+  @parmas autoTime number
+  @parmas auto bool
+*/
+
 export default class Slider extends Component {
   constructor(props) {
     super(props)
     this.state = {index: 0}
     this.index = 0
     this.preTranslateX = 0
+  }
+
+  componentDidMount() {
+    const {auto, images} = this.props
+    let {autoTime} = this.props
+
+    autoTime = autoTime ? autoTime : 3000
+
+    console.log(auto)
+
+    if (auto) {
+      this.interval = setInterval(() => {
+        const index = this.state.index + 2 > images.length ? 0 : this.state.index + 1
+        this.setState({index})
+        this.index = -index
+
+        this.preTranslateX = this.index * this.refs.container.offsetWidth
+        this.refs.row.style.transition = 'all .5s'
+        this.refs.row.style.webkitTransition = 'all .5s'
+
+        this.refs.row.style.transform = `translateX(${this.preTranslateX}px)`
+        this.refs.row.style.webkitTransform = `translateX(${this.preTranslateX}px)`
+
+      }, autoTime)
+    }
   }
 
   onTouchStart(e) {
