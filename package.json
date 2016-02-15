@@ -1,0 +1,24 @@
+{
+  "name": "uinz-slider",
+  "version": "1.0.0",
+  "description": "image slider react componet",
+  "main": "build/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "slider"
+  ],
+  "author": "yinz",
+  "license": "ISC",
+  "dependencies": {
+    "react": "^0.14.7"
+  },
+  "devDependencies": {
+    "babel": "^6.5.2",
+    "babel-preset-es2015": "^6.5.0",
+    "babel-preset-react": "^6.5.0",
+    "babel-preset-stage-0": "^6.5.0",
+    "react": "^0.14.7"
+  }
+}
