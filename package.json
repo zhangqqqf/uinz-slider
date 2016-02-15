@@ -1,6 +1,6 @@
 {
   "name": "uinz-slider",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "image slider react componet",
   "main": "dist/slider.js",
   "scripts": {
