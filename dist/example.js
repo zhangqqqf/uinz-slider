@@ -19801,8 +19801,6 @@
 
 	          _this2.refs.row.style.transform = 'translateX(' + _this2.preTranslateX + 'px)';
 	          _this2.refs.row.style.webkitTransform = 'translateX(' + _this2.preTranslateX + 'px)';
-
-	          console.log(_this2.preTranslateX);
 	        }, autoTime);
 	      }
 	    }
