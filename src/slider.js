@@ -1,13 +1,13 @@
 import React, {Component} from 'react'
 
-const wrapperStyle = {
+const containerStyle = {
   overflow: 'hidden',
   position: 'relative',
 }
 
 const navStyle = {
   position: 'absolute',
-  bottom: '5%',
+  bottom: '10%',
   textAlign: 'center',
   zIndex: '3',
   width: '100%',
@@ -36,7 +36,6 @@ const imgStyle = {
   width: '100%',
 }
 
-const EDGE_WIDTH = 50
 
 /* 
   @parmas images arrary
@@ -53,15 +52,12 @@ export default class Slider extends Component {
   }
 
   componentDidMount() {
-    const {auto, images} = this.props
-    let {autoTime} = this.props
-
-    autoTime = autoTime ? autoTime : 3000
-
-    console.log(auto)
+    const {auto, autoTime} = this.props
 
     if (auto) {
       this.interval = setInterval(() => {
+        const {images} = this.props
+
         const index = this.state.index + 2 > images.length ? 0 : this.state.index + 1
         this.setState({index})
         this.index = -index
@@ -77,8 +73,14 @@ export default class Slider extends Component {
     }
   }
 
+  componentWillUnMount() {
+    clearInterval(this.interval)
+  }
+
   onTouchStart(e) {
     e.preventDefault()
+    clearInterval(this.interval)
+
     this.containerWidth = this.refs.container.offsetWidth
     this.rowWidth = (this.props.images.length - 1) * this.containerWidth
     this.refs.row.style.transition = ''
@@ -87,12 +89,13 @@ export default class Slider extends Component {
   }
 
   onTouchMove(e) {
-    const leftEdge = EDGE_WIDTH
-    const rightEdge = -(this.rowWidth + EDGE_WIDTH)
+    const {edgeWidth} = this.props
+    const leftEdge = edgeWidth
+    const rightEdge = -(this.rowWidth + edgeWidth)
     const diffX = e.touches[0].pageX - this.startX
 
     this.translateX = this.preTranslateX + diffX
-    this.translateX = this.translateX > leftEdge ? EDGE_WIDTH : this.translateX
+    this.translateX = this.translateX > leftEdge ? edgeWidth : this.translateX
     this.translateX = this.translateX < rightEdge ? rightEdge : this.translateX
 
     this.refs.row.style.transform = `translateX(${this.translateX}px)`
@@ -110,6 +113,8 @@ export default class Slider extends Component {
 
     this.refs.row.style.transform = `translateX(${this.preTranslateX}px)`
     this.refs.row.style.webkitTransform = `translateX(${this.preTranslateX}px)`
+
+    this.componentDidMount()
   }
 
   render() {
@@ -117,8 +122,8 @@ export default class Slider extends Component {
 
     return (
       <div
-        className="slider-wrapper"
-        style={wrapperStyle}
+        className="slider-container"
+        style={containerStyle}
         ref="container"
         onTouchStart={this.onTouchStart.bind(this)}
         onTouchMove={this.onTouchMove.bind(this)}
@@ -144,6 +149,9 @@ export default class Slider extends Component {
 
 Slider.defaultProps = {
   images: [],
+  auto: false,
+  autoTime: 3000,
+  edgeWidth: 50,
 }
 
 // onClick onContextMenu onDoubleClick onDrag onDragEnd onDragEnter onDragExit

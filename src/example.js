@@ -8,12 +8,4 @@ const images = [
   'http://static.bootcss.com/www/assets/img/flat-ui.png',
 ]
 
-class Example extends Component {
-  render() {
-    return (
-      <Slider images={images} auto={true}/>
-    )
-  }
-}
-
-ReactDOM.render(<Example/>, document.getElementById('app'))
+ReactDOM.render(<Slider images={images} auto={true}/>, document.getElementById('app'))

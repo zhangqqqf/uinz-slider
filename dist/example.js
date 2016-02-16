@@ -46,8 +46,6 @@
 
 	'use strict';
 
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 	var _react = __webpack_require__(1);
 
 	var _react2 = _interopRequireDefault(_react);
@@ -62,34 +60,9 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
 	var images = ['http://static.bootcss.com/www/assets/img/opencdn.png', 'http://static.bootcss.com/www/assets/img/gulpjs.png', 'http://static.bootcss.com/www/assets/img/flat-ui.png'];
 
-	var Example = function (_Component) {
-	  _inherits(Example, _Component);
-
-	  function Example() {
-	    _classCallCheck(this, Example);
-
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(Example).apply(this, arguments));
-	  }
-
-	  _createClass(Example, [{
-	    key: 'render',
-	    value: function render() {
-	      return _react2.default.createElement(_slider2.default, { images: images, auto: true });
-	    }
-	  }]);
-
-	  return Example;
-	}(_react.Component);
-
-	_reactDom2.default.render(_react2.default.createElement(Example, null), document.getElementById('app'));
+	_reactDom2.default.render(_react2.default.createElement(_slider2.default, { images: images, auto: true }), document.getElementById('app'));
 
 /***/ },
 /* 1 */
@@ -19716,14 +19689,14 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var wrapperStyle = {
+	var containerStyle = {
 	  overflow: 'hidden',
 	  position: 'relative'
 	};
 
 	var navStyle = {
 	  position: 'absolute',
-	  bottom: '5%',
+	  bottom: '10%',
 	  textAlign: 'center',
 	  zIndex: '3',
 	  width: '100%'
@@ -19752,8 +19725,6 @@
 	  width: '100%'
 	};
 
-	var EDGE_WIDTH = 50;
-
 	/* 
 	  @parmas images arrary
 	  @parmas autoTime number
@@ -19781,16 +19752,14 @@
 
 	      var _props = this.props;
 	      var auto = _props.auto;
-	      var images = _props.images;
-	      var autoTime = this.props.autoTime;
+	      var autoTime = _props.autoTime;
 
-
-	      autoTime = autoTime ? autoTime : 3000;
-
-	      console.log(auto);
 
 	      if (auto) {
 	        this.interval = setInterval(function () {
+	          var images = _this2.props.images;
+
+
 	          var index = _this2.state.index + 2 > images.length ? 0 : _this2.state.index + 1;
 	          _this2.setState({ index: index });
 	          _this2.index = -index;
@@ -19805,9 +19774,16 @@
 	      }
 	    }
 	  }, {
+	    key: 'componentWillUnMount',
+	    value: function componentWillUnMount() {
+	      clearInterval(this.interval);
+	    }
+	  }, {
 	    key: 'onTouchStart',
 	    value: function onTouchStart(e) {
 	      e.preventDefault();
+	      clearInterval(this.interval);
+
 	      this.containerWidth = this.refs.container.offsetWidth;
 	      this.rowWidth = (this.props.images.length - 1) * this.containerWidth;
 	      this.refs.row.style.transition = '';
@@ -19817,12 +19793,14 @@
 	  }, {
 	    key: 'onTouchMove',
 	    value: function onTouchMove(e) {
-	      var leftEdge = EDGE_WIDTH;
-	      var rightEdge = -(this.rowWidth + EDGE_WIDTH);
+	      var edgeWidth = this.props.edgeWidth;
+
+	      var leftEdge = edgeWidth;
+	      var rightEdge = -(this.rowWidth + edgeWidth);
 	      var diffX = e.touches[0].pageX - this.startX;
 
 	      this.translateX = this.preTranslateX + diffX;
-	      this.translateX = this.translateX > leftEdge ? EDGE_WIDTH : this.translateX;
+	      this.translateX = this.translateX > leftEdge ? edgeWidth : this.translateX;
 	      this.translateX = this.translateX < rightEdge ? rightEdge : this.translateX;
 
 	      this.refs.row.style.transform = 'translateX(' + this.translateX + 'px)';
@@ -19841,6 +19819,8 @@
 
 	      this.refs.row.style.transform = 'translateX(' + this.preTranslateX + 'px)';
 	      this.refs.row.style.webkitTransform = 'translateX(' + this.preTranslateX + 'px)';
+
+	      this.componentDidMount();
 	    }
 	  }, {
 	    key: 'render',
@@ -19853,8 +19833,8 @@
 	      return _react2.default.createElement(
 	        'div',
 	        {
-	          className: 'slider-wrapper',
-	          style: wrapperStyle,
+	          className: 'slider-container',
+	          style: containerStyle,
 	          ref: 'container',
 	          onTouchStart: this.onTouchStart.bind(this),
 	          onTouchMove: this.onTouchMove.bind(this),
@@ -19888,7 +19868,10 @@
 
 
 	Slider.defaultProps = {
-	  images: []
+	  images: [],
+	  auto: false,
+	  autoTime: 3000,
+	  edgeWidth: 50
 	};
 
 	// onClick onContextMenu onDoubleClick onDrag onDragEnd onDragEnter onDragExit
