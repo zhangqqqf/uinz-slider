@@ -1,15 +1,21 @@
 {
   "name": "uinz-slider",
   "version": "1.0.11",
-  "description": "image slider react componet",
+  "description": "simple image slider react componet",
   "main": "dist/slider.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "babel src -d dist --presets es2015,stage-0,react",
     "webpack": "webpack"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yinzSE/uinz-slider"
+  },
   "keywords": [
-    "slider"
+    "slider",
+    "react-component",
+    "react-web"
   ],
   "author": "yinz",
   "license": "ISC",
