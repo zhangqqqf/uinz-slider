@@ -66,8 +66,8 @@ export default class Slider extends Component {
     shouldComponentUpdate(nextProps, nextState) {
         const { state, props } = this
         if (
-            state.index !== nextState.index &&
-            props.auto !== nextProps.auto &&
+            state.index !== nextState.index ||
+            props.auto !== nextProps.auto ||
             props.autoTime !== nextProps.autoTime
         ) return true
 
