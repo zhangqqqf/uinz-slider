@@ -1,159 +1,194 @@
-import React, {Component} from 'react'
-
-const containerStyle = {
-  overflow: 'hidden',
-  position: 'relative',
-}
-
-const navStyle = {
-  position: 'absolute',
-  bottom: '10%',
-  textAlign: 'center',
-  zIndex: '3',
-  width: '100%',
-}
-
-const navDotStyle = {
-  display: 'inline-block',
-  width: '10px',
-  height: '10px',
-  borderRadius: '50%',
-  backgroundColor: 'rgba(255, 255, 255, .5)',
-  margin: '3px',
-  transition: 'all .5s',
-  WebkitTransition: 'all .5s',
-}
-
-const rowStyle = {
-  fontSize: 0,
-  letterSpacing: '-3px',
-  whiteSpace: 'nowrap',
-  willChange: 'transform',
-}
-
-const imgStyle = {
-  display: 'inline-block',
-  width: '100%',
-}
-
-
 /* 
-  @parmas images arrary
-  @parmas autoTime number
-  @parmas auto bool
-*/
+ * @parmas images arrary
+ * @parmas autoTime picNumber
+ * @parmas auto bool
+ */
+
+import React, { Component } from 'react'
 
 export default class Slider extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {index: 0}
-    this.index = 0
-    this.preTranslateX = 0
-  }
-
-  componentDidMount() {
-    const {auto, autoTime} = this.props
-
-    if (auto) {
-      this.interval = setInterval(() => {
-        const {images} = this.props
-
-        const index = this.state.index + 2 > images.length ? 0 : this.state.index + 1
-        this.setState({index})
-        this.index = -index
-
-        this.preTranslateX = this.index * this.refs.container.offsetWidth
-        this.refs.row.style.transition = 'all .5s'
-        this.refs.row.style.webkitTransition = 'all .5s'
-
-        this.refs.row.style.transform = `translateX(${this.preTranslateX}px)`
-        this.refs.row.style.webkitTransform = `translateX(${this.preTranslateX}px)`
-
-      }, autoTime)
+    static defaultProps = {
+        index: 0,
+        auto: false,
+        images: [],
     }
-  }
+    style = {
+        container: {
+            position: 'relative',
+            overflow: 'hidden',
+            cursor: '-webkit-grab',
+        },
+        indicateBox: {
+            position: 'absolute',
+            width: '100%',
+            bottom: '0',
+            textAlign: 'center'
+        },
+        indicateDot: {
+            display: 'inline-block',
+            width: '10px',
+            height: '10px',
+            borderRadius: '50%',
+            background: 'rgba(255,255,255,.5)',
+            margin: '10px 5px'
+        },
+        scroller: {
+            whiteSpace: 'nowrap',
+        },
+        img: {
+            width: '100%',
+            display: 'inline-block',
+        }
+    }
+    positionInfo = {
+        active: false,
+        startX: 0,
+        diffX: 0,
+        translateX: 0,
+        endX: 0,
+        startTime: 0,
+        endTime: 0,
+        max: 0,
+        min: 0,
+    }
 
-  componentWillUnMount() {
-    clearInterval(this.interval)
-  }
+    constructor(props) {
+        super(props)
+        this.state = { index: 0 }
+    }
 
-  onTouchStart(e) {
-    e.preventDefault()
-    clearInterval(this.interval)
+    componentDidMount() {
+        const { container, scroller } = this.refs
+        this.positionInfo.containerWidth = container.offsetWidth
+        this.positionInfo.picNum = this.props.images.length
+        // 可能需要自定义
+        this.positionInfo.maxX = -(this.positionInfo.containerWidth * (this.positionInfo.picNum - 1) + 20)
+        this.positionInfo.minX = 20
 
-    this.containerWidth = this.refs.container.offsetWidth
-    this.rowWidth = (this.props.images.length - 1) * this.containerWidth
-    this.refs.row.style.transition = ''
-    this.refs.row.style.webkitTransition = ''
-    this.startX = e.touches[0].pageX
-  }
+        // touch
+        container.addEventListener('touchstart', e => {
+            const { pageX: x, pageY: y } = e.touches[0]
+            this.onMoveStart(x, y)
+        })
+        container.addEventListener('touchmove', e => {
+            const { pageX: x, pageY: y } = e.touches[0]
+            this.onMove(x, y)
+        })
+        container.addEventListener('touchend', this.onMoveEnd)
 
-  onTouchMove(e) {
-    const {edgeWidth} = this.props
-    const leftEdge = edgeWidth
-    const rightEdge = -(this.rowWidth + edgeWidth)
-    const diffX = e.touches[0].pageX - this.startX
+        // mouse
+        container.addEventListener('mousedown', e => {
+            e.preventDefault()
+            this.onMoveStart(e.pageX, e.pageY)
+        })
+        container.addEventListener('mousemove', e => {
+            e.preventDefault()
+            this.onMove(e.pageX, e.pageY)
+        })
+        container.addEventListener('mouseleave', e => {
+            this.onMoveEnd(e.pageX, e.pageY)
+        })
+        container.addEventListener('mouseup', e => {
+            this.onMoveEnd(e.pageX, e.pageY)
+        })
+    }
 
-    this.translateX = this.preTranslateX + diffX
-    this.translateX = this.translateX > leftEdge ? edgeWidth : this.translateX
-    this.translateX = this.translateX < rightEdge ? rightEdge : this.translateX
+    onMoveStart = (x, y) => {
+        const { container, scroller } = this.refs
 
-    this.refs.row.style.transform = `translateX(${this.translateX}px)`
-    this.refs.row.style.webkitTransform = `translateX(${this.translateX}px)`
-  }
+        this.positionInfo.startX = x
+        this.positionInfo.active = true
+        this.positionInfo.startTime = Date.now()
 
-  onTouchEnd() {
-    this.index = (this.translateX / this.containerWidth).toFixed(0)
-    this.setState({index: Math.abs(this.index)})
+        container.style.cursor = '-webkit-grabbing'
+        scroller.style.transition = 'none'
+        scroller.style.webkitTransition = 'none'
+    }
 
-    this.preTranslateX = this.index * this.containerWidth
+    onMove = (x, y) => {
+        const { container, scroller } = this.refs
+        const { startX, endX, translateX, minX, maxX, active } = this.positionInfo
 
-    this.refs.row.style.transition = 'all .5s'
-    this.refs.row.style.webkitTransition = 'all .5s'
+        if (!active) return
 
-    this.refs.row.style.transform = `translateX(${this.preTranslateX}px)`
-    this.refs.row.style.webkitTransform = `translateX(${this.preTranslateX}px)`
+        this.positionInfo.diffX = startX - x
 
-    this.componentDidMount()
-  }
+        let _translateX = endX - this.positionInfo.diffX
+        _translateX = _translateX > minX ? minX : (_translateX < maxX ? maxX : _translateX)
 
-  render() {
-    const {images} = this.props
+        this.positionInfo.translateX = _translateX
+        scroller.style.transform = `translate(${_translateX}px)`
+        scroller.style.webkitTransform = `translate(${_translateX}px)`
+    }
 
-    return (
-      <div
-        className="slider-container"
-        style={containerStyle}
-        ref="container"
-        onTouchStart={this.onTouchStart.bind(this)}
-        onTouchMove={this.onTouchMove.bind(this)}
-        onTouchEnd={this.onTouchEnd.bind(this)}
-      >
-        <div style={navStyle}>
-          {images.map((_, index) =>
-            <span key={`uinz-${index}`} style={index == this.state.index ? Object.assign({}, navDotStyle, {backgroundColor: '#FFF'}) : navDotStyle}/>
-          )}
-        </div>
-        <div
-          className="slider-row"
-          ref="row"
-          style={rowStyle}>
-          {images.map((url, index) =>
-            <img key={`slider-image-${index}`} src={url} style={imgStyle}/>
-          )}
-        </div>
-      </div>
-    )
-  }
+    onMoveEnd = (e) => {
+        const { container, scroller } = this.refs
+        container.style.cursor = '-webkit-grab'
+
+        const { index } = this.state
+        const { translateX, startTime, picNum, diffX, minX, maxX, containerWidth } = this.positionInfo
+
+        this.positionInfo.active = false
+
+        const diffTime = Date.now() - startTime
+        const rate = Math.abs(diffX / diffTime)
+
+        let _index
+
+        if (rate > 0.5 && translateX < minX && translateX > maxX) {
+            if (diffX > 0) {
+                if (index != picNum - 1) {
+                    _index = index + 1
+                }
+            } else {
+                if (index !== 0) {
+                    _index = index - 1
+                }
+            }
+        } else {
+            _index = Number(Math.abs(translateX / containerWidth).toFixed(0))
+        }
+
+        this.positionInfo.endX = -1 * _index * containerWidth
+
+        this.setState({ index: _index })
+
+        // gotoIndex
+        scroller.style.transition = 'transform .5s'
+        scroller.style.transform = `translateX(${this.positionInfo.endX}px)`
+
+        this.positionInfo.diffX = 0
+    }
+
+    render() {
+        const {
+            state: { index },
+            props: { images },
+            style
+        } = this
+
+        return (
+            <div style={style.container} ref="container">
+                <div style={style.scroller} ref="scroller">
+                    {
+                        images.map((src, i) =>
+                            <img key={i} style={style.img} src={src} />
+                        )
+                    }
+                </div>
+                <div style={style.indicateBox}>
+                    {images.map((_, i) => {
+                        const activeStyle = Object.assign({}, style.indicateDot, { background: 'rgba(255,255,255,.9)' })
+                        return <span key={i} style={i === index ? activeStyle : style.indicateDot }></span>
+                    })}
+                </div>
+            </div>
+        )
+    }
 }
 
-Slider.defaultProps = {
-  images: [],
-  auto: false,
-  autoTime: 3000,
-  edgeWidth: 50,
-}
-
+// 并不打算使用 react 的事件系统, 直接获取 dom 元素 使用原生的事件系统
 // onClick onContextMenu onDoubleClick onDrag onDragEnd onDragEnter onDragExit
 // onDragLeave onDragOver onDragStart onDrop onMouseDown onMouseEnter onMouseLeave
 // onMouseMove onMouseOut onMouseOver onMouseUp
+

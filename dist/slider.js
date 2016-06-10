@@ -1,7 +1,7 @@
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -16,193 +16,244 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var containerStyle = {
-  overflow: 'hidden',
-  position: 'relative'
-};
-
-var navStyle = {
-  position: 'absolute',
-  bottom: '10%',
-  textAlign: 'center',
-  zIndex: '3',
-  width: '100%'
-};
-
-var navDotStyle = {
-  display: 'inline-block',
-  width: '10px',
-  height: '10px',
-  borderRadius: '50%',
-  backgroundColor: 'rgba(255, 255, 255, .5)',
-  margin: '3px',
-  transition: 'all .5s',
-  WebkitTransition: 'all .5s'
-};
-
-var rowStyle = {
-  fontSize: 0,
-  letterSpacing: '-3px',
-  whiteSpace: 'nowrap',
-  willChange: 'transform'
-};
-
-var imgStyle = {
-  display: 'inline-block',
-  width: '100%'
-};
-
-/* 
-  @parmas images arrary
-  @parmas autoTime number
-  @parmas auto bool
-*/
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /* 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @parmas images arrary
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @parmas autoTime picNumber
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @parmas auto bool
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
 
 var Slider = function (_Component) {
-  _inherits(Slider, _Component);
+    _inherits(Slider, _Component);
 
-  function Slider(props) {
-    _classCallCheck(this, Slider);
+    function Slider(props) {
+        _classCallCheck(this, Slider);
 
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Slider).call(this, props));
+        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Slider).call(this, props));
 
-    _this.state = { index: 0 };
-    _this.index = 0;
-    _this.preTranslateX = 0;
-    return _this;
-  }
+        _this.style = {
+            container: {
+                position: 'relative',
+                overflow: 'hidden',
+                cursor: '-webkit-grab'
+            },
+            indicateBox: {
+                position: 'absolute',
+                width: '100%',
+                bottom: '0',
+                textAlign: 'center'
+            },
+            indicateDot: {
+                display: 'inline-block',
+                width: '10px',
+                height: '10px',
+                borderRadius: '50%',
+                background: 'rgba(255,255,255,.5)',
+                margin: '10px 5px'
+            },
+            scroller: {
+                whiteSpace: 'nowrap'
+            },
+            img: {
+                width: '100%',
+                display: 'inline-block'
+            }
+        };
+        _this.positionInfo = {
+            active: false,
+            startX: 0,
+            diffX: 0,
+            translateX: 0,
+            endX: 0,
+            startTime: 0,
+            endTime: 0,
+            max: 0,
+            min: 0
+        };
 
-  _createClass(Slider, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      var _this2 = this;
-
-      var _props = this.props;
-      var auto = _props.auto;
-      var autoTime = _props.autoTime;
+        _this.onMoveStart = function (x, y) {
+            var _this$refs = _this.refs;
+            var container = _this$refs.container;
+            var scroller = _this$refs.scroller;
 
 
-      if (auto) {
-        this.interval = setInterval(function () {
-          var images = _this2.props.images;
+            _this.positionInfo.startX = x;
+            _this.positionInfo.active = true;
+            _this.positionInfo.startTime = Date.now();
+
+            container.style.cursor = '-webkit-grabbing';
+            scroller.style.transition = 'none';
+            scroller.style.webkitTransition = 'none';
+        };
+
+        _this.onMove = function (x, y) {
+            var _this$refs2 = _this.refs;
+            var container = _this$refs2.container;
+            var scroller = _this$refs2.scroller;
+            var _this$positionInfo = _this.positionInfo;
+            var startX = _this$positionInfo.startX;
+            var endX = _this$positionInfo.endX;
+            var translateX = _this$positionInfo.translateX;
+            var minX = _this$positionInfo.minX;
+            var maxX = _this$positionInfo.maxX;
+            var active = _this$positionInfo.active;
 
 
-          var index = _this2.state.index + 2 > images.length ? 0 : _this2.state.index + 1;
-          _this2.setState({ index: index });
-          _this2.index = -index;
+            if (!active) return;
 
-          _this2.preTranslateX = _this2.index * _this2.refs.container.offsetWidth;
-          _this2.refs.row.style.transition = 'all .5s';
-          _this2.refs.row.style.webkitTransition = 'all .5s';
+            _this.positionInfo.diffX = startX - x;
 
-          _this2.refs.row.style.transform = 'translateX(' + _this2.preTranslateX + 'px)';
-          _this2.refs.row.style.webkitTransform = 'translateX(' + _this2.preTranslateX + 'px)';
-        }, autoTime);
-      }
+            var _translateX = endX - _this.positionInfo.diffX;
+            _translateX = _translateX > minX ? minX : _translateX < maxX ? maxX : _translateX;
+
+            _this.positionInfo.translateX = _translateX;
+            scroller.style.transform = 'translate(' + _translateX + 'px)';
+            scroller.style.webkitTransform = 'translate(' + _translateX + 'px)';
+        };
+
+        _this.onMoveEnd = function (e) {
+            var _this$refs3 = _this.refs;
+            var container = _this$refs3.container;
+            var scroller = _this$refs3.scroller;
+
+            container.style.cursor = '-webkit-grab';
+
+            var index = _this.state.index;
+            var _this$positionInfo2 = _this.positionInfo;
+            var translateX = _this$positionInfo2.translateX;
+            var startTime = _this$positionInfo2.startTime;
+            var picNum = _this$positionInfo2.picNum;
+            var diffX = _this$positionInfo2.diffX;
+            var minX = _this$positionInfo2.minX;
+            var maxX = _this$positionInfo2.maxX;
+            var containerWidth = _this$positionInfo2.containerWidth;
+
+
+            _this.positionInfo.active = false;
+
+            var diffTime = Date.now() - startTime;
+            var rate = Math.abs(diffX / diffTime);
+
+            var _index = void 0;
+
+            if (rate > 0.5 && translateX < minX && translateX > maxX) {
+                if (diffX > 0) {
+                    if (index != picNum - 1) {
+                        _index = index + 1;
+                    }
+                } else {
+                    if (index !== 0) {
+                        _index = index - 1;
+                    }
+                }
+            } else {
+                _index = Number(Math.abs(translateX / containerWidth).toFixed(0));
+            }
+
+            _this.positionInfo.endX = -1 * _index * containerWidth;
+
+            _this.setState({ index: _index });
+
+            // gotoIndex
+            scroller.style.transition = 'transform .5s';
+            scroller.style.transform = 'translateX(' + _this.positionInfo.endX + 'px)';
+
+            _this.positionInfo.diffX = 0;
+        };
+
+        _this.state = { index: 0 };
+        return _this;
     }
-  }, {
-    key: 'componentWillUnMount',
-    value: function componentWillUnMount() {
-      clearInterval(this.interval);
-    }
-  }, {
-    key: 'onTouchStart',
-    value: function onTouchStart(e) {
-      e.preventDefault();
-      clearInterval(this.interval);
 
-      this.containerWidth = this.refs.container.offsetWidth;
-      this.rowWidth = (this.props.images.length - 1) * this.containerWidth;
-      this.refs.row.style.transition = '';
-      this.refs.row.style.webkitTransition = '';
-      this.startX = e.touches[0].pageX;
-    }
-  }, {
-    key: 'onTouchMove',
-    value: function onTouchMove(e) {
-      var edgeWidth = this.props.edgeWidth;
+    _createClass(Slider, [{
+        key: 'componentDidMount',
+        value: function componentDidMount() {
+            var _this2 = this;
 
-      var leftEdge = edgeWidth;
-      var rightEdge = -(this.rowWidth + edgeWidth);
-      var diffX = e.touches[0].pageX - this.startX;
+            var _refs = this.refs;
+            var container = _refs.container;
+            var scroller = _refs.scroller;
 
-      this.translateX = this.preTranslateX + diffX;
-      this.translateX = this.translateX > leftEdge ? edgeWidth : this.translateX;
-      this.translateX = this.translateX < rightEdge ? rightEdge : this.translateX;
+            this.positionInfo.containerWidth = container.offsetWidth;
+            this.positionInfo.picNum = this.props.images.length;
+            // 可能需要自定义
+            this.positionInfo.maxX = -(this.positionInfo.containerWidth * (this.positionInfo.picNum - 1) + 20);
+            this.positionInfo.minX = 20;
 
-      this.refs.row.style.transform = 'translateX(' + this.translateX + 'px)';
-      this.refs.row.style.webkitTransform = 'translateX(' + this.translateX + 'px)';
-    }
-  }, {
-    key: 'onTouchEnd',
-    value: function onTouchEnd() {
-      this.index = (this.translateX / this.containerWidth).toFixed(0);
-      this.setState({ index: Math.abs(this.index) });
+            // touch
+            container.addEventListener('touchstart', function (e) {
+                var _e$touches$ = e.touches[0];
+                var x = _e$touches$.pageX;
+                var y = _e$touches$.pageY;
 
-      this.preTranslateX = this.index * this.containerWidth;
+                _this2.onMoveStart(x, y);
+            });
+            container.addEventListener('touchmove', function (e) {
+                var _e$touches$2 = e.touches[0];
+                var x = _e$touches$2.pageX;
+                var y = _e$touches$2.pageY;
 
-      this.refs.row.style.transition = 'all .5s';
-      this.refs.row.style.webkitTransition = 'all .5s';
+                _this2.onMove(x, y);
+            });
+            container.addEventListener('touchend', this.onMoveEnd);
 
-      this.refs.row.style.transform = 'translateX(' + this.preTranslateX + 'px)';
-      this.refs.row.style.webkitTransform = 'translateX(' + this.preTranslateX + 'px)';
+            // mouse
+            container.addEventListener('mousedown', function (e) {
+                e.preventDefault();
+                _this2.onMoveStart(e.pageX, e.pageY);
+            });
+            container.addEventListener('mousemove', function (e) {
+                e.preventDefault();
+                _this2.onMove(e.pageX, e.pageY);
+            });
+            container.addEventListener('mouseleave', function (e) {
+                _this2.onMoveEnd(e.pageX, e.pageY);
+            });
+            container.addEventListener('mouseup', function (e) {
+                _this2.onMoveEnd(e.pageX, e.pageY);
+            });
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            var index = this.state.index;
+            var images = this.props.images;
+            var style = this.style;
 
-      this.componentDidMount();
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      var _this3 = this;
 
-      var images = this.props.images;
+            return _react2.default.createElement(
+                'div',
+                { style: style.container, ref: 'container' },
+                _react2.default.createElement(
+                    'div',
+                    { style: style.scroller, ref: 'scroller' },
+                    images.map(function (src, i) {
+                        return _react2.default.createElement('img', { key: i, style: style.img, src: src });
+                    })
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { style: style.indicateBox },
+                    images.map(function (_, i) {
+                        var activeStyle = Object.assign({}, style.indicateDot, { background: 'rgba(255,255,255,.9)' });
+                        return _react2.default.createElement('span', { key: i, style: i === index ? activeStyle : style.indicateDot });
+                    })
+                )
+            );
+        }
+    }]);
 
-
-      return _react2.default.createElement(
-        'div',
-        {
-          className: 'slider-container',
-          style: containerStyle,
-          ref: 'container',
-          onTouchStart: this.onTouchStart.bind(this),
-          onTouchMove: this.onTouchMove.bind(this),
-          onTouchEnd: this.onTouchEnd.bind(this)
-        },
-        _react2.default.createElement(
-          'div',
-          { style: navStyle },
-          images.map(function (_, index) {
-            return _react2.default.createElement('span', { key: 'uinz-' + index, style: index == _this3.state.index ? Object.assign({}, navDotStyle, { backgroundColor: '#FFF' }) : navDotStyle });
-          })
-        ),
-        _react2.default.createElement(
-          'div',
-          {
-            className: 'slider-row',
-            ref: 'row',
-            style: rowStyle },
-          images.map(function (url, index) {
-            return _react2.default.createElement('img', { key: 'slider-image-' + index, src: url, style: imgStyle });
-          })
-        )
-      );
-    }
-  }]);
-
-  return Slider;
+    return Slider;
 }(_react.Component);
 
-exports.default = Slider;
-
-
-Slider.defaultProps = {
-  images: [],
-  auto: false,
-  autoTime: 3000,
-  edgeWidth: 50
-};
-
+// 并不打算使用 react 的事件系统, 直接获取 dom 元素 使用原生的事件系统
 // onClick onContextMenu onDoubleClick onDrag onDragEnd onDragEnter onDragExit
 // onDragLeave onDragOver onDragStart onDrop onMouseDown onMouseEnter onMouseLeave
 // onMouseMove onMouseOut onMouseOver onMouseUp
+
+
+Slider.defaultProps = {
+    index: 0,
+    auto: false,
+    images: []
+};
+exports.default = Slider;

@@ -1,9 +1,10 @@
-var webpack = require('webpack')
-var path = require('path')
+const webpack = require('webpack')
+const path = require('path')
+
 module.exports = {
   entry: './src/example.js',
   output: {
-    path: __dirname + '/dist',
+    path: path.join(__dirname, 'dist'),
     filename: './example.js'
   },
   module: {
