@@ -16,3 +16,7 @@ const demo = props => {
 ```
 
 [demo](http://yinzse.github.io/uinz-slider/): http://yinzse.github.io/uinz-slider/
+
+
+## TODO
+自动播放 以及 相关自定义参数
