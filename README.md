@@ -1,5 +1,7 @@
 # simple react images slider component
 
+`npm install uinz-slider`
+
 ```
 import Slider from 'uinz-slider'
 
@@ -16,7 +18,6 @@ const demo = props => {
 ```
 
 [demo](http://uinz.github.io/uinz-slider/): http://uinz.github.io/uinz-slider/
-
 
 ## TODO
  - 相关自定义参数
