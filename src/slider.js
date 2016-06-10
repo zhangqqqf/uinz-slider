@@ -4,13 +4,15 @@
  * @parmas auto bool
  */
 
+// 没有使用 react 的事件系统, 直接获取 dom 元素 使用原生的事件系统
+
 import React, { Component } from 'react'
 
 export default class Slider extends Component {
     static defaultProps = {
         index: 0,
         auto: false,
-        delay: 3000,
+        autoTime: 3000,
         images: [],
     }
     style = {
@@ -56,12 +58,10 @@ export default class Slider extends Component {
         max: 0,
         min: 0,
     }
-
     constructor(props) {
         super(props)
         this.state = { index: 0 }
     }
-
     componentDidMount() {
         const {
             refs: { container },
@@ -104,58 +104,44 @@ export default class Slider extends Component {
 
         auto && this.autoScroll()
     }
-
     initData = () => {
         const { container } = this.refs
         this.moveInfo.containerWidth = container.offsetWidth
         this.moveInfo.picNum = this.props.images.length
-            // 可能需要自定义
+
+        // TODO 自定义
         this.moveInfo.maxX = -(this.moveInfo.containerWidth * (this.moveInfo.picNum - 1) + 20)
         this.moveInfo.minX = 20
     }
-
     onMoveStart = (x, y) => {
         const { container, scroller } = this.refs
-
         this.moveInfo.startX = x
         this.moveInfo.active = true
         this.moveInfo.startTime = Date.now()
-
         container.style.cursor = '-webkit-grabbing'
         scroller.style.transition = 'none'
         scroller.style.webkitTransition = 'none'
     }
-
     onMove = (x, y) => {
         const { container, scroller } = this.refs
         const { startX, endX, translateX, minX, maxX, active } = this.moveInfo
-
         if (!active) return
-
         this.moveInfo.diffX = startX - x
-
         let _translateX = endX - this.moveInfo.diffX
         _translateX = _translateX > minX ? minX : (_translateX < maxX ? maxX : _translateX)
-
         this.moveInfo.translateX = _translateX
         scroller.style.transform = `translate(${_translateX}px)`
         scroller.style.webkitTransform = `translate(${_translateX}px)`
     }
-
     onMoveEnd = (e) => {
         const { container, scroller } = this.refs
         container.style.cursor = '-webkit-grab'
-
         const { index } = this.state
         const { translateX, startTime, picNum, diffX, minX, maxX, containerWidth } = this.moveInfo
-
         this.moveInfo.active = false
-
         const diffTime = Date.now() - startTime
         const rate = Math.abs(diffX / diffTime)
-
         let _index
-
         if (rate > 0.5 && translateX < minX && translateX > maxX) {
             if (diffX > 0) {
                 if (index != picNum - 1) {
@@ -169,11 +155,8 @@ export default class Slider extends Component {
         } else {
             _index = Number(Math.abs(translateX / containerWidth).toFixed(0))
         }
-
         this.moveInfo.endX = -1 * _index * containerWidth
-
         this.setState({ index: _index })
-
         scroller.style.transition = 'transform .5s'
         scroller.style.webkitTransition = 'transform .5s'
         scroller.style.transform = `translateX(${this.moveInfo.endX}px)`
@@ -181,10 +164,9 @@ export default class Slider extends Component {
 
         this.moveInfo.diffX = 0
     }
-
     autoScroll = () => {
         const {
-            props: { delay },
+            props: { autoTime },
             moveInfo: { containerWidth, picNum },
             refs: { scroller }
         } = this
@@ -193,23 +175,19 @@ export default class Slider extends Component {
             let _index = this.state.index + 1
             _index = _index > picNum - 1 ? 0 : _index
             this.setState({ index: _index })
-
             this.moveInfo.endX = -1 * _index * containerWidth
-
             scroller.style.transform = `translateX(${this.moveInfo.endX}px)`
             scroller.style.webkitTransform = `translateX(${this.moveInfo.endX}px)`
 
             this.autoScroll()
-        }, delay)
+        }, autoTime)
     }
-
     render() {
         const {
             state: { index },
             props: { images },
             style
         } = this
-
         return (
             <div style={style.container} ref="container">
                 <div style={style.scroller} ref="scroller">
@@ -231,9 +209,3 @@ export default class Slider extends Component {
         )
     }
 }
-
-// 并不打算使用 react 的事件系统, 直接获取 dom 元素 使用原生的事件系统
-// onClick onContextMenu onDoubleClick onDrag onDragEnd onDragEnter onDragExit
-// onDragLeave onDragOver onDragStart onDrop onMouseDown onMouseEnter onMouseLeave
-// onMouseMove onMouseOut onMouseOver onMouseUp
-
