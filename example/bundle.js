@@ -62,7 +62,7 @@
 
 	var images = ['http://static.bootcss.com/www/assets/img/opencdn.png', 'http://static.bootcss.com/www/assets/img/gulpjs.png', 'http://static.bootcss.com/www/assets/img/flat-ui.png'];
 
-	_reactDom2.default.render(_react2.default.createElement(_slider2.default, { images: images, auto: true }), document.getElementById('app'));
+	_reactDom2.default.render(_react2.default.createElement(_slider2.default, { images: images }), document.getElementById('app'));
 
 /***/ },
 /* 1 */

@@ -8,4 +8,4 @@ const images = [
   'http://static.bootcss.com/www/assets/img/flat-ui.png',
 ]
 
-ReactDOM.render(<Slider images={images} auto={true}/>, document.getElementById('app'))
+ReactDOM.render(<Slider images={images}/>, document.getElementById('app'))
