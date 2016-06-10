@@ -65,6 +65,8 @@ export default class Slider extends Component {
         this.positionInfo.maxX = -(this.positionInfo.containerWidth * (this.positionInfo.picNum - 1) + 20)
         this.positionInfo.minX = 20
 
+        window.addEventListener('resize', () => this.positionInfo.containerWidth = container.offsetWidth)
+
         // touch
         container.addEventListener('touchstart', e => {
             const { pageX: x, pageY: y } = e.touches[0]
