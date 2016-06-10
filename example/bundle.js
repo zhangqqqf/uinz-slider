@@ -19700,6 +19700,8 @@
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @parmas auto bool
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
 
+	// 没有使用 react 的事件系统, 直接获取 dom 元素 使用原生的事件系统
+
 	var Slider = function (_Component) {
 	    _inherits(Slider, _Component);
 
@@ -19757,7 +19759,8 @@
 
 	            _this.moveInfo.containerWidth = container.offsetWidth;
 	            _this.moveInfo.picNum = _this.props.images.length;
-	            // 可能需要自定义
+
+	            // TODO 自定义
 	            _this.moveInfo.maxX = -(_this.moveInfo.containerWidth * (_this.moveInfo.picNum - 1) + 20);
 	            _this.moveInfo.minX = 20;
 	        };
@@ -19767,11 +19770,9 @@
 	            var container = _this$refs.container;
 	            var scroller = _this$refs.scroller;
 
-
 	            _this.moveInfo.startX = x;
 	            _this.moveInfo.active = true;
 	            _this.moveInfo.startTime = Date.now();
-
 	            container.style.cursor = '-webkit-grabbing';
 	            scroller.style.transition = 'none';
 	            scroller.style.webkitTransition = 'none';
@@ -19789,14 +19790,10 @@
 	            var maxX = _this$moveInfo.maxX;
 	            var active = _this$moveInfo.active;
 
-
 	            if (!active) return;
-
 	            _this.moveInfo.diffX = startX - x;
-
 	            var _translateX = endX - _this.moveInfo.diffX;
 	            _translateX = _translateX > minX ? minX : _translateX < maxX ? maxX : _translateX;
-
 	            _this.moveInfo.translateX = _translateX;
 	            scroller.style.transform = 'translate(' + _translateX + 'px)';
 	            scroller.style.webkitTransform = 'translate(' + _translateX + 'px)';
@@ -19808,7 +19805,6 @@
 	            var scroller = _this$refs3.scroller;
 
 	            container.style.cursor = '-webkit-grab';
-
 	            var index = _this.state.index;
 	            var _this$moveInfo2 = _this.moveInfo;
 	            var translateX = _this$moveInfo2.translateX;
@@ -19819,14 +19815,10 @@
 	            var maxX = _this$moveInfo2.maxX;
 	            var containerWidth = _this$moveInfo2.containerWidth;
 
-
 	            _this.moveInfo.active = false;
-
 	            var diffTime = Date.now() - startTime;
 	            var rate = Math.abs(diffX / diffTime);
-
 	            var _index = void 0;
-
 	            if (rate > 0.5 && translateX < minX && translateX > maxX) {
 	                if (diffX > 0) {
 	                    if (index != picNum - 1) {
@@ -19840,11 +19832,8 @@
 	            } else {
 	                _index = Number(Math.abs(translateX / containerWidth).toFixed(0));
 	            }
-
 	            _this.moveInfo.endX = -1 * _index * containerWidth;
-
 	            _this.setState({ index: _index });
-
 	            scroller.style.transition = 'transform .5s';
 	            scroller.style.webkitTransition = 'transform .5s';
 	            scroller.style.transform = 'translateX(' + _this.moveInfo.endX + 'px)';
@@ -19854,25 +19843,26 @@
 	        };
 
 	        _this.autoScroll = function () {
-	            var delay = _this.props.delay;
+	            var autoTime = _this.props.autoTime;
 	            var _this$moveInfo3 = _this.moveInfo;
 	            var containerWidth = _this$moveInfo3.containerWidth;
 	            var picNum = _this$moveInfo3.picNum;
+	            var active = _this$moveInfo3.active;
 	            var scroller = _this.refs.scroller;
 
 
 	            _this.intervel = setTimeout(function () {
+	                if (active) return _this.autoScroll();
+
 	                var _index = _this.state.index + 1;
 	                _index = _index > picNum - 1 ? 0 : _index;
 	                _this.setState({ index: _index });
-
 	                _this.moveInfo.endX = -1 * _index * containerWidth;
-
 	                scroller.style.transform = 'translateX(' + _this.moveInfo.endX + 'px)';
 	                scroller.style.webkitTransform = 'translateX(' + _this.moveInfo.endX + 'px)';
 
 	                _this.autoScroll();
-	            }, delay);
+	            }, autoTime);
 	        };
 
 	        _this.state = { index: 0 };
@@ -19937,7 +19927,6 @@
 	            var images = this.props.images;
 	            var style = this.style;
 
-
 	            return _react2.default.createElement(
 	                'div',
 	                { style: style.container, ref: 'container' },
@@ -19963,16 +19952,10 @@
 	    return Slider;
 	}(_react.Component);
 
-	// 并不打算使用 react 的事件系统, 直接获取 dom 元素 使用原生的事件系统
-	// onClick onContextMenu onDoubleClick onDrag onDragEnd onDragEnter onDragExit
-	// onDragLeave onDragOver onDragStart onDrop onMouseDown onMouseEnter onMouseLeave
-	// onMouseMove onMouseOut onMouseOver onMouseUp
-
-
 	Slider.defaultProps = {
 	    index: 0,
 	    auto: false,
-	    delay: 3000,
+	    autoTime: 3000,
 	    images: []
 	};
 	exports.default = Slider;

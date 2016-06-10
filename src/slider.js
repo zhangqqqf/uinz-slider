@@ -167,11 +167,13 @@ export default class Slider extends Component {
     autoScroll = () => {
         const {
             props: { autoTime },
-            moveInfo: { containerWidth, picNum },
+            moveInfo: { containerWidth, picNum, active },
             refs: { scroller }
         } = this
 
         this.intervel = setTimeout(() => {
+            if (active) return this.autoScroll()
+
             let _index = this.state.index + 1
             _index = _index > picNum - 1 ? 0 : _index
             this.setState({ index: _index })
