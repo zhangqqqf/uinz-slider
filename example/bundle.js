@@ -19726,17 +19726,21 @@
 	                height: '10px',
 	                borderRadius: '50%',
 	                background: 'rgba(255,255,255,.5)',
-	                margin: '10px 5px'
+	                margin: '10px 5px',
+	                transition: 'all .5s',
+	                WebkitTransition: 'all .5s'
 	            },
 	            scroller: {
-	                whiteSpace: 'nowrap'
+	                whiteSpace: 'nowrap',
+	                transition: 'transform .5s',
+	                WebkitTransition: 'transform .5s'
 	            },
 	            img: {
 	                width: '100%',
 	                display: 'inline-block'
 	            }
 	        };
-	        _this.positionInfo = {
+	        _this.moveInfo = {
 	            active: false,
 	            startX: 0,
 	            diffX: 0,
@@ -19748,15 +19752,25 @@
 	            min: 0
 	        };
 
+	        _this.initData = function () {
+	            var container = _this.refs.container;
+
+	            _this.moveInfo.containerWidth = container.offsetWidth;
+	            _this.moveInfo.picNum = _this.props.images.length;
+	            // 可能需要自定义
+	            _this.moveInfo.maxX = -(_this.moveInfo.containerWidth * (_this.moveInfo.picNum - 1) + 20);
+	            _this.moveInfo.minX = 20;
+	        };
+
 	        _this.onMoveStart = function (x, y) {
 	            var _this$refs = _this.refs;
 	            var container = _this$refs.container;
 	            var scroller = _this$refs.scroller;
 
 
-	            _this.positionInfo.startX = x;
-	            _this.positionInfo.active = true;
-	            _this.positionInfo.startTime = Date.now();
+	            _this.moveInfo.startX = x;
+	            _this.moveInfo.active = true;
+	            _this.moveInfo.startTime = Date.now();
 
 	            container.style.cursor = '-webkit-grabbing';
 	            scroller.style.transition = 'none';
@@ -19767,23 +19781,23 @@
 	            var _this$refs2 = _this.refs;
 	            var container = _this$refs2.container;
 	            var scroller = _this$refs2.scroller;
-	            var _this$positionInfo = _this.positionInfo;
-	            var startX = _this$positionInfo.startX;
-	            var endX = _this$positionInfo.endX;
-	            var translateX = _this$positionInfo.translateX;
-	            var minX = _this$positionInfo.minX;
-	            var maxX = _this$positionInfo.maxX;
-	            var active = _this$positionInfo.active;
+	            var _this$moveInfo = _this.moveInfo;
+	            var startX = _this$moveInfo.startX;
+	            var endX = _this$moveInfo.endX;
+	            var translateX = _this$moveInfo.translateX;
+	            var minX = _this$moveInfo.minX;
+	            var maxX = _this$moveInfo.maxX;
+	            var active = _this$moveInfo.active;
 
 
 	            if (!active) return;
 
-	            _this.positionInfo.diffX = startX - x;
+	            _this.moveInfo.diffX = startX - x;
 
-	            var _translateX = endX - _this.positionInfo.diffX;
+	            var _translateX = endX - _this.moveInfo.diffX;
 	            _translateX = _translateX > minX ? minX : _translateX < maxX ? maxX : _translateX;
 
-	            _this.positionInfo.translateX = _translateX;
+	            _this.moveInfo.translateX = _translateX;
 	            scroller.style.transform = 'translate(' + _translateX + 'px)';
 	            scroller.style.webkitTransform = 'translate(' + _translateX + 'px)';
 	        };
@@ -19796,17 +19810,17 @@
 	            container.style.cursor = '-webkit-grab';
 
 	            var index = _this.state.index;
-	            var _this$positionInfo2 = _this.positionInfo;
-	            var translateX = _this$positionInfo2.translateX;
-	            var startTime = _this$positionInfo2.startTime;
-	            var picNum = _this$positionInfo2.picNum;
-	            var diffX = _this$positionInfo2.diffX;
-	            var minX = _this$positionInfo2.minX;
-	            var maxX = _this$positionInfo2.maxX;
-	            var containerWidth = _this$positionInfo2.containerWidth;
+	            var _this$moveInfo2 = _this.moveInfo;
+	            var translateX = _this$moveInfo2.translateX;
+	            var startTime = _this$moveInfo2.startTime;
+	            var picNum = _this$moveInfo2.picNum;
+	            var diffX = _this$moveInfo2.diffX;
+	            var minX = _this$moveInfo2.minX;
+	            var maxX = _this$moveInfo2.maxX;
+	            var containerWidth = _this$moveInfo2.containerWidth;
 
 
-	            _this.positionInfo.active = false;
+	            _this.moveInfo.active = false;
 
 	            var diffTime = Date.now() - startTime;
 	            var rate = Math.abs(diffX / diffTime);
@@ -19827,15 +19841,38 @@
 	                _index = Number(Math.abs(translateX / containerWidth).toFixed(0));
 	            }
 
-	            _this.positionInfo.endX = -1 * _index * containerWidth;
+	            _this.moveInfo.endX = -1 * _index * containerWidth;
 
 	            _this.setState({ index: _index });
 
-	            // gotoIndex
 	            scroller.style.transition = 'transform .5s';
-	            scroller.style.transform = 'translateX(' + _this.positionInfo.endX + 'px)';
+	            scroller.style.webkitTransition = 'transform .5s';
+	            scroller.style.transform = 'translateX(' + _this.moveInfo.endX + 'px)';
+	            scroller.style.webkitTransform = 'translateX(' + _this.moveInfo.endX + 'px)';
 
-	            _this.positionInfo.diffX = 0;
+	            _this.moveInfo.diffX = 0;
+	        };
+
+	        _this.autoScroll = function () {
+	            var delay = _this.props.delay;
+	            var _this$moveInfo3 = _this.moveInfo;
+	            var containerWidth = _this$moveInfo3.containerWidth;
+	            var picNum = _this$moveInfo3.picNum;
+	            var scroller = _this.refs.scroller;
+
+
+	            _this.intervel = setTimeout(function () {
+	                var _index = _this.state.index + 1;
+	                _index = _index > picNum - 1 ? 0 : _index;
+	                _this.setState({ index: _index });
+
+	                _this.moveInfo.endX = -1 * _index * containerWidth;
+
+	                scroller.style.transform = 'translateX(' + _this.moveInfo.endX + 'px)';
+	                scroller.style.webkitTransform = 'translateX(' + _this.moveInfo.endX + 'px)';
+
+	                _this.autoScroll();
+	            }, delay);
 	        };
 
 	        _this.state = { index: 0 };
@@ -19847,15 +19884,16 @@
 	        value: function componentDidMount() {
 	            var _this2 = this;
 
-	            var _refs = this.refs;
-	            var container = _refs.container;
-	            var scroller = _refs.scroller;
+	            var container = this.refs.container;
+	            var auto = this.props.auto;
 
-	            this.positionInfo.containerWidth = container.offsetWidth;
-	            this.positionInfo.picNum = this.props.images.length;
-	            // 可能需要自定义
-	            this.positionInfo.maxX = -(this.positionInfo.containerWidth * (this.positionInfo.picNum - 1) + 20);
-	            this.positionInfo.minX = 20;
+
+	            this.initData();
+
+	            window.addEventListener('resize', function () {
+	                _this2.initData();
+	                _this2.onMoveEnd();
+	            });
 
 	            // touch
 	            container.addEventListener('touchstart', function (e) {
@@ -19889,6 +19927,8 @@
 	            container.addEventListener('mouseup', function (e) {
 	                _this2.onMoveEnd(e.pageX, e.pageY);
 	            });
+
+	            auto && this.autoScroll();
 	        }
 	    }, {
 	        key: 'render',
@@ -19932,6 +19972,7 @@
 	Slider.defaultProps = {
 	    index: 0,
 	    auto: false,
+	    delay: 3000,
 	    images: []
 	};
 	exports.default = Slider;

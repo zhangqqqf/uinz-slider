@@ -10,6 +10,7 @@ export default class Slider extends Component {
     static defaultProps = {
         index: 0,
         auto: false,
+        delay: 3000,
         images: [],
     }
     style = {
@@ -30,17 +31,21 @@ export default class Slider extends Component {
             height: '10px',
             borderRadius: '50%',
             background: 'rgba(255,255,255,.5)',
-            margin: '10px 5px'
+            margin: '10px 5px',
+            transition: 'all .5s',
+            WebkitTransition: 'all .5s',
         },
         scroller: {
             whiteSpace: 'nowrap',
+            transition: 'transform .5s',
+            WebkitTransition: 'transform .5s',
         },
         img: {
             width: '100%',
             display: 'inline-block',
         }
     }
-    positionInfo = {
+    moveInfo = {
         active: false,
         startX: 0,
         diffX: 0,
@@ -58,14 +63,17 @@ export default class Slider extends Component {
     }
 
     componentDidMount() {
-        const { container, scroller } = this.refs
-        this.positionInfo.containerWidth = container.offsetWidth
-        this.positionInfo.picNum = this.props.images.length
-        // 可能需要自定义
-        this.positionInfo.maxX = -(this.positionInfo.containerWidth * (this.positionInfo.picNum - 1) + 20)
-        this.positionInfo.minX = 20
+        const {
+            refs: { container },
+            props: { auto }
+        } = this
 
-        window.addEventListener('resize', () => this.positionInfo.containerWidth = container.offsetWidth)
+        this.initData()
+
+        window.addEventListener('resize', () => {
+            this.initData()
+            this.onMoveEnd()
+        })
 
         // touch
         container.addEventListener('touchstart', e => {
@@ -93,14 +101,25 @@ export default class Slider extends Component {
         container.addEventListener('mouseup', e => {
             this.onMoveEnd(e.pageX, e.pageY)
         })
+
+        auto && this.autoScroll()
+    }
+
+    initData = () => {
+        const { container } = this.refs
+        this.moveInfo.containerWidth = container.offsetWidth
+        this.moveInfo.picNum = this.props.images.length
+            // 可能需要自定义
+        this.moveInfo.maxX = -(this.moveInfo.containerWidth * (this.moveInfo.picNum - 1) + 20)
+        this.moveInfo.minX = 20
     }
 
     onMoveStart = (x, y) => {
         const { container, scroller } = this.refs
 
-        this.positionInfo.startX = x
-        this.positionInfo.active = true
-        this.positionInfo.startTime = Date.now()
+        this.moveInfo.startX = x
+        this.moveInfo.active = true
+        this.moveInfo.startTime = Date.now()
 
         container.style.cursor = '-webkit-grabbing'
         scroller.style.transition = 'none'
@@ -109,16 +128,16 @@ export default class Slider extends Component {
 
     onMove = (x, y) => {
         const { container, scroller } = this.refs
-        const { startX, endX, translateX, minX, maxX, active } = this.positionInfo
+        const { startX, endX, translateX, minX, maxX, active } = this.moveInfo
 
         if (!active) return
 
-        this.positionInfo.diffX = startX - x
+        this.moveInfo.diffX = startX - x
 
-        let _translateX = endX - this.positionInfo.diffX
+        let _translateX = endX - this.moveInfo.diffX
         _translateX = _translateX > minX ? minX : (_translateX < maxX ? maxX : _translateX)
 
-        this.positionInfo.translateX = _translateX
+        this.moveInfo.translateX = _translateX
         scroller.style.transform = `translate(${_translateX}px)`
         scroller.style.webkitTransform = `translate(${_translateX}px)`
     }
@@ -128,9 +147,9 @@ export default class Slider extends Component {
         container.style.cursor = '-webkit-grab'
 
         const { index } = this.state
-        const { translateX, startTime, picNum, diffX, minX, maxX, containerWidth } = this.positionInfo
+        const { translateX, startTime, picNum, diffX, minX, maxX, containerWidth } = this.moveInfo
 
-        this.positionInfo.active = false
+        this.moveInfo.active = false
 
         const diffTime = Date.now() - startTime
         const rate = Math.abs(diffX / diffTime)
@@ -151,15 +170,37 @@ export default class Slider extends Component {
             _index = Number(Math.abs(translateX / containerWidth).toFixed(0))
         }
 
-        this.positionInfo.endX = -1 * _index * containerWidth
+        this.moveInfo.endX = -1 * _index * containerWidth
 
         this.setState({ index: _index })
 
-        // gotoIndex
         scroller.style.transition = 'transform .5s'
-        scroller.style.transform = `translateX(${this.positionInfo.endX}px)`
+        scroller.style.webkitTransition = 'transform .5s'
+        scroller.style.transform = `translateX(${this.moveInfo.endX}px)`
+        scroller.style.webkitTransform = `translateX(${this.moveInfo.endX}px)`
 
-        this.positionInfo.diffX = 0
+        this.moveInfo.diffX = 0
+    }
+
+    autoScroll = () => {
+        const {
+            props: { delay },
+            moveInfo: { containerWidth, picNum },
+            refs: { scroller }
+        } = this
+
+        this.intervel = setTimeout(() => {
+            let _index = this.state.index + 1
+            _index = _index > picNum - 1 ? 0 : _index
+            this.setState({ index: _index })
+
+            this.moveInfo.endX = -1 * _index * containerWidth
+
+            scroller.style.transform = `translateX(${this.moveInfo.endX}px)`
+            scroller.style.webkitTransform = `translateX(${this.moveInfo.endX}px)`
+
+            this.autoScroll()
+        }, delay)
     }
 
     render() {
@@ -179,10 +220,12 @@ export default class Slider extends Component {
                     }
                 </div>
                 <div style={style.indicateBox}>
-                    {images.map((_, i) => {
-                        const activeStyle = Object.assign({}, style.indicateDot, { background: 'rgba(255,255,255,.9)' })
-                        return <span key={i} style={i === index ? activeStyle : style.indicateDot }></span>
-                    })}
+                    {
+                        images.map((_, i) => {
+                            const activeStyle = Object.assign({}, style.indicateDot, { background: 'rgba(255,255,255,.9)' })
+                            return <span key={i} style={i === index ? activeStyle : style.indicateDot }></span>
+                        })
+                    }
                 </div>
             </div>
         )
