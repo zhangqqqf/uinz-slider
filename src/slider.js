@@ -85,34 +85,34 @@ export default class Slider extends Component {
         window.addEventListener('resize', () => {
             this.initData()
             this.onMoveEnd()
-        })
+        }, false)
 
         // touch
         container.addEventListener('touchstart', e => {
             const { pageX: x, pageY: y } = e.touches[0]
             this.onMoveStart(x, y)
-        })
+        }, false)
         container.addEventListener('touchmove', e => {
             const { pageX: x, pageY: y } = e.touches[0]
             this.onMove(x, y)
-        })
+        }, false)
         container.addEventListener('touchend', this.onMoveEnd)
 
         // mouse
         container.addEventListener('mousedown', e => {
             e.preventDefault()
             this.onMoveStart(e.pageX, e.pageY)
-        })
+        }, false)
         container.addEventListener('mousemove', e => {
             e.preventDefault()
             this.onMove(e.pageX, e.pageY)
-        })
+        }, false)
         container.addEventListener('mouseleave', e => {
             this.onMoveEnd(e.pageX, e.pageY)
-        })
+        }, false)
         container.addEventListener('mouseup', e => {
             this.onMoveEnd(e.pageX, e.pageY)
-        })
+        }, false)
 
         auto && this.autoScroll()
     }
