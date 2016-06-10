@@ -19872,6 +19872,10 @@
 	    _createClass(Slider, [{
 	        key: 'shouldComponentUpdate',
 	        value: function shouldComponentUpdate(nextProps, nextState) {
+	            var state = this.state;
+	            var props = this.props;
+
+	            if (state.index !== nextState.index && props.auto !== nextProps.auto && props.autoTime !== nextProps.autoTime) return true;
 
 	            return false;
 	        }
