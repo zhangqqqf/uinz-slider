@@ -4,7 +4,7 @@
   "description": "simple image slider react componet",
   "main": "dist/slider.js",
   "scripts": {
-    "build": "babel src/slider.js -d dist --presets es2015,stage-0,react",
+    "build": "babel src -d dist --minified --no-comments --presets es2015,stage-0,react",
     "webpack": "webpack"
   },
   "repository": {

@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
-import Slider from './slider'
+import Slider from '../src/slider'
 
 const images = [
   'http://static.bootcss.com/www/assets/img/opencdn.png',

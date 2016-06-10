@@ -2,14 +2,14 @@ const webpack = require('webpack')
 const path = require('path')
 
 module.exports = {
-  entry: './src/example.js',
+  entry: './example/index.js',
   output: {
-    path: path.join(__dirname, 'dist'),
-    filename: './example.js'
+    path: './example',
+    filename: 'bundle.js'
   },
   module: {
     loaders: [
-      {test: /\.js?$/, include: path.resolve(__dirname, 'src'), exclude: /node_modules/, loader: 'babel'},
+      {test: /\.js?$/, exclude: /node_modules/, loader: 'babel'},
     ]
   },
 };
