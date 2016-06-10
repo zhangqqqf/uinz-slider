@@ -17,7 +17,7 @@ const demo = props => {
 }
 ```
 
-[demo](http://uinz.github.io/uinz-slider/): http://uinz.github.io/uinz-slider/
+[demo](http://uinz.github.io/uinz-slider/)
 
 ## TODO
  - 相关自定义参数
