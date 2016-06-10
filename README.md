@@ -15,7 +15,7 @@ const demo = props => {
 }
 ```
 
-[demo](http://yinzse.github.io/uinz-slider/): http://yinzse.github.io/uinz-slider/
+[demo](http://uinz.github.io/uinz-slider/): http://yinzse.github.io/uinz-slider/
 
 
 ## TODO
