@@ -14,6 +14,7 @@ export default class Slider extends Component {
         auto: false,
         autoTime: 3000,
         images: [],
+        rate: 0.5,
     }
     style = {
         container: {
@@ -145,15 +146,27 @@ export default class Slider extends Component {
         scroller.style.webkitTransform = `translate(${_translateX}px)`
     }
     onMoveEnd = (e) => {
-        const { container, scroller } = this.refs
-        container.style.cursor = '-webkit-grab'
-        const { index } = this.state
-        const { translateX, startTime, picNum, diffX, minX, maxX, containerWidth } = this.moveInfo
+        const {
+            state: { index },
+            props:  { rate },
+            refs: { container, scroller },
+            moveInfo: {
+                containerWidth,
+                translateX,
+                startTime,
+                picNum,
+                diffX,
+                minX,
+                maxX,
+            }
+        } = this
+
         this.moveInfo.active = false
-        const diffTime = Date.now() - startTime
-        const rate = Math.abs(diffX / diffTime)
+        container.style.cursor = '-webkit-grab'
+
         let _index
-        if (rate > 0.5 && translateX < minX && translateX > maxX) {
+        const diffTime = Date.now() - startTime
+        if (Math.abs(diffX / diffTime) > rate && translateX < minX && translateX > maxX) {
             if (diffX > 0) {
                 if (index != picNum - 1) {
                     _index = index + 1
@@ -166,6 +179,7 @@ export default class Slider extends Component {
         } else {
             _index = Number(Math.abs(translateX / containerWidth).toFixed(0))
         }
+
         this.moveInfo.endX = -1 * _index * containerWidth
         this.setState({ index: _index })
         scroller.style.transition = 'transform .5s'
@@ -184,8 +198,8 @@ export default class Slider extends Component {
 
         this.intervel = setTimeout(() => {
             if (active) return this.autoScroll()
-
             let _index = this.state.index + 1
+
             _index = _index > picNum - 1 ? 0 : _index
             this.setState({ index: _index })
             this.moveInfo.endX = -1 * _index * containerWidth
