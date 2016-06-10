@@ -62,6 +62,17 @@ export default class Slider extends Component {
         super(props)
         this.state = { index: 0 }
     }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        const { state, props } = this
+        if (
+            state.index !== nextState.index &&
+            props.auto !== nextProps.auto &&
+            props.autoTime !== nextProps.autoTime
+        ) return true
+
+        return false
+    }
     componentDidMount() {
         const {
             refs: { container },
@@ -211,3 +222,4 @@ export default class Slider extends Component {
         )
     }
 }
+
