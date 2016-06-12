@@ -1,6 +1,6 @@
 /* 
  * @parmas images arrary
- * @parmas autoTime picNumber
+ * @parmas autoTime number
  * @parmas auto bool
  */
 
